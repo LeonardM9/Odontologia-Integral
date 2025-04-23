@@ -51,9 +51,6 @@ function Login() {
 
   const navigate = useNavigate();
 
-
-  
-
   return (
     <>
     <header class="bg-white bg-opacity-80 shadow-md">
