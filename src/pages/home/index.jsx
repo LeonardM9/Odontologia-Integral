@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
-
 function Home() {
   const [count, setCount] = useState(0)
 
@@ -74,7 +73,7 @@ function Home() {
           {/* Imagen decorativa o mapa */}
           <div className="flex justify-center items-center">
             <img 
-              src="https://www.dentix.co/es-co/sites/default/files/dia_odontologo_dentix.jpg" 
+              src="https://www.clinicalorenzo.com/wp-content/uploads/2019/02/estomatologia-odontologia-zaragoza.jpg" 
               alt="Equipo odontológico" 
               className="rounded-lg shadow-md w-full max-w-sm"
             />

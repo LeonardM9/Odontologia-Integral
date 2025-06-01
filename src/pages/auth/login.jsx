@@ -1,101 +1,91 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { authService } from '../../api/auth.service'
 
-
-function Login() {
-
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  })
-
-  const  cambioForm = (e) => {
-    setLoginData({
-      ...loginData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  useEffect (() => {
-    console.log('testing useEffect');  
-  }, [])
-
-  const requestLogin = async (e) => {
-    e.preventDefault();
-    console.log(loginData);
-    try {
-      await getData();
-      alert('Login exitoso');
-      navigate('/');
-    } catch (error) {
-      console.error(error.message);
-      alert('Hubo un error al iniciar sesión');
-    }
-  }
-
-  async function getData() {
-    const url = "https://example.org/products.json";
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-  
-      const json = await response.json();
-      console.log(json);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
+const Navbar = () => {
   const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem('token');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
-    <>
-    <header class="bg-white bg-opacity-80 shadow-md">
-        <nav class="container mx-auto px-6 py-4">
-          <div class="flex items-center justify-between">
-            <Link to="/">
+    <header className="bg-white bg-opacity-80 shadow-md">
+      <nav className="container mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          <Link to="/">
             <div className="flex flex-col lg:flex-row items-center justify-center gap-3 my-1 mx-2">
-              {/* Imagen */}
               <img
                 src="https://hr-dental.com/wp-content/uploads/2018/09/imagen-odontologia-hr-dental.jpg"
                 alt="Odontología"
                 className="w-12 h-auto rounded-lg "
               />
-                <div class="text-black font-bold text-xl">
+              <div className="text-black font-bold text-xl">
                 Odontologia Integral
-                </div>
               </div>
-            </Link>
-            <div class="hidden md:block">
-              <ul class="flex items-center space-x-8">
-              <li><Link to="/" class="text-black font-bold text-l">Inicio</Link></li>
-                <li><Link to="/page2" class="text-black font-bold text-l">Tratamientos</Link></li>
-                <li><Link to="/login" class="text-black font-bold text-l">Iniciar Sesión</Link></li>
-                <li><Link to="/" class="text-black font-bold text-l">Contactos</Link></li>
-              </ul>
             </div>
+          </Link>
+          <div className="hidden md:block">
+            <ul className="flex items-center space-x-8">
+              <li><Link to="/" className="text-black font-bold text-l">Inicio</Link></li>
+              <li><Link to="/page2" className="text-black font-bold text-l">Tratamientos</Link></li>
+              {!isAuthenticated ? (
+                <li><Link to="/login" className="text-black font-bold text-l">Iniciar Sesión</Link></li>
+              ) : (
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="text-black font-bold text-l bg-transparent border-none cursor-pointer"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </li>
+              )}
+              <li><Link to="/" className="text-black font-bold text-l">Contactos</Link></li>
+            </ul>
           </div>
-        </nav>
-      </header>
-        
-{/* Login Form */}
-    <section className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-white px-4">
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    try {
+      await authService.login(email, password)
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  return (
+    <>
+      <Navbar />
+      {/* Login Form */}
+      <section className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-white px-4">
         <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Inicia Sesión</h2>
-          <form onSubmit={requestLogin} className="space-y-6">
+          {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo Electrónico</label>
               <input
                 id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 required
-                value={loginData.email}
-                onChange={cambioForm}
                 className="mt-1 block w-full border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 py-2 px-1"
               />
             </div>
@@ -103,12 +93,10 @@ function Login() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">Contraseña</label>
               <input
                 id="password"
-                name="password"
                 type="password"
-                autoComplete="current-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 required
-                value={loginData.password}
-                onChange={cambioForm}
                 className="mt-1 block w-full border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 py-2 px-1"
               />
             </div>
@@ -126,10 +114,8 @@ function Login() {
           </div>
         </div>
       </section>
-    
-
-
     </>
-    )
+  )
 }
+
 export default Login
