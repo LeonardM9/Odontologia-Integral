@@ -74,9 +74,11 @@ const Register = () => {
     console.log('¡Se hizo submit en register!');
     setError('')
     try {
-      await authService.register(registerData.nombre, registerData.email, registerData.password)
+      const data = await authService.register(registerData.nombre, registerData.email, registerData.password);
+      console.log('Respuesta del backend:', data);
       navigate('/login')
     } catch (err) {
+      console.error('Error en register:', err);
       setError(err.message)
     }
   }

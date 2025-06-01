@@ -63,9 +63,11 @@ const Login = () => {
     console.log('¡Se hizo submit en login!');
     setError('')
     try {
-      await authService.login(email, password)
+      const data = await authService.login(email, password);
+      console.log('Respuesta del backend:', data);
       navigate('/')
     } catch (err) {
+      console.error('Error en login:', err);
       setError(err.message)
     }
   }
