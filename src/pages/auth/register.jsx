@@ -71,6 +71,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('¡Se hizo submit en register!');
     setError('')
     try {
       await authService.register(registerData.nombre, registerData.email, registerData.password)
