@@ -5,9 +5,9 @@ export const citasService = {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/citas/agendar`, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        ...(token && { 'Authorization': `Bearer ${token}` })
       },
       body: JSON.stringify(citaData)
     });
